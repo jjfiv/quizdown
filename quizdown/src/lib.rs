@@ -31,15 +31,15 @@ pub enum Error {
 
 #[derive(Debug, Clone)]
 pub struct QOption {
-    correct: bool,
-    content: String,
+    pub correct: bool,
+    pub content: String,
 }
 
 #[derive(Debug, Clone)]
 pub struct Question {
-    prompt: String,
-    options: Vec<QOption>,
-    ordered: bool,
+    pub prompt: String,
+    pub options: Vec<QOption>,
+    pub ordered: bool,
 }
 
 

@@ -1,6 +1,7 @@
 
 use pulldown_cmark::{html, Event, Tag};
 use crate::{QOption, Question, Error};
+use std::fmt::Write;
 
 #[derive(Debug)]
 pub(crate) struct HeadingChunk<'md> {
@@ -18,9 +19,17 @@ pub(crate) struct HeadingChunk<'md> {
 impl<'md> HeadingChunk<'md> {
     pub(crate) fn finish(self) -> Question {
         let mut prompt = String::new();
-        prompt.push_str("<b><i>");
+        if let Some(lvl) = self.level {
+            write!(prompt, "<h{}>", lvl).unwrap();
+        } else {
+            prompt.push_str("<b><i>");
+        }
         html::push_html(&mut prompt, self.header.iter().cloned());
-        prompt.push_str("</i></b>");
+        if let Some(lvl) = self.level {
+            write!(prompt, "</h{}>", lvl).unwrap();
+        } else {
+            prompt.push_str("</i></b>");
+        }
         html::push_html(&mut prompt, self.contents.iter().cloned());
         let ordered = self.options.ordered;
         let options = self
