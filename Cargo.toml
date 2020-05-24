@@ -1,2 +1,2 @@
 [workspace]
-members = ["quizdown", "cli"]
+members = ["quizdown", "cli", "cffi"]

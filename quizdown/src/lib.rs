@@ -3,6 +3,9 @@ use pulldown_cmark::{Event, Options, Parser};
 use std::fs;
 use std::io;
 
+#[macro_use]
+extern crate serde_derive;
+
 mod parsing;
 
 #[derive(Debug, thiserror::Error)]
@@ -29,13 +32,13 @@ pub enum Error {
     Internal,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Serialize, Debug, Clone)]
 pub struct QOption {
     pub correct: bool,
     pub content: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Serialize, Debug, Clone)]
 pub struct Question {
     pub prompt: String,
     pub options: Vec<QOption>,

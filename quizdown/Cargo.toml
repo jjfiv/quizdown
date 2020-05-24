@@ -7,3 +7,5 @@ edition = "2018"
 [dependencies]
 pulldown-cmark = "0.7"
 thiserror = "1"
+serde = "1"
+serde_derive = "1"

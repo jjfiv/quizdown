@@ -3,3 +3,4 @@ Cargo.lock
 /data
 /*.html
 .vscode
+venv

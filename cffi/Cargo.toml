@@ -1,0 +1,25 @@
+[package]
+name = "quizdown-cffi"
+version = "0.1.0"
+authors = ["John Foley <jjfoley@smith.edu>"]
+readme = "README.md"
+description = "Package containing Rust Toybox games."
+homepage = "https://github.com/jjfiv/idkq.org"
+publish = false
+edition = "2018"
+
+[lib]
+name = "quizdown_cffi"
+crate-type = ["cdylib"]
+
+[dependencies]
+libc = "0.2"
+serde_json = "1"
+quizdown = {path = "../quizdown"}
+
+[package.metadata.maturin]
+requires-dist = ["cffi"]
+classifier = [
+  "Programming Language :: Python :: 3.5",
+  "Operating System :: OS Independent",
+]
