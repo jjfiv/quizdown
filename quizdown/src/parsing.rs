@@ -1,6 +1,5 @@
-
+use crate::{Error, QOption, Question};
 use pulldown_cmark::{html, Event, Tag};
-use crate::{QOption, Question, Error};
 use std::fmt::Write;
 
 #[derive(Debug)]
@@ -14,7 +13,6 @@ pub(crate) struct HeadingChunk<'md> {
     /// The parsed-out task-list:
     options: TaskList<'md>,
 }
-
 
 impl<'md> HeadingChunk<'md> {
     pub(crate) fn finish(self) -> Question {

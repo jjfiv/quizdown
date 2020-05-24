@@ -1,7 +1,7 @@
+use parsing::QParser;
 use pulldown_cmark::{Event, Options, Parser};
 use std::fs;
 use std::io;
-use parsing::QParser;
 
 mod parsing;
 
@@ -42,7 +42,6 @@ pub struct Question {
     pub ordered: bool,
 }
 
-
 pub fn process_questions_str(content: &str) -> Result<Vec<Question>, Error> {
     let mut output = Vec::new();
 
@@ -81,7 +80,7 @@ mod tests {
         let qs = process_questions_str(simple_q).unwrap();
         assert_eq!(1, qs.len());
     }
-    
+
     #[test]
     fn test_broken_q() {
         let broken_q = r#"
@@ -92,7 +91,7 @@ mod tests {
         "#;
         let qs = process_questions_str(broken_q).unwrap_err();
         match qs {
-            Error::NoOptionsFound => {},
+            Error::NoOptionsFound => {}
             other => panic!("Expected NoOptionsFound error, got {:?}", other),
         }
     }

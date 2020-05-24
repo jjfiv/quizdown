@@ -2,12 +2,14 @@ use quizdown::*;
 use std::env;
 
 fn main() -> Result<(), Error> {
-    println!("<html>
-    <head>
-    <title>Quizdown</title>
-    <meta charset=\"utf-8\" />
-    </head>
-    <body>");
+    println!(
+        "<html>
+        <head>
+            <title>Quizdown</title>
+            <meta charset=\"utf-8\" />
+        </head>
+        <body>"
+    );
     for path in env::args().skip(1) {
         let found = process_questions_file(&path)?;
 
@@ -20,7 +22,10 @@ fn main() -> Result<(), Error> {
                 println!("<ul>");
             }
             for opt in q.options {
-                println!("<li><label><input type='checkbox' />{}</label></li>", opt.content)
+                println!(
+                    "<li><label><input type='checkbox' />{}</label></li>",
+                    opt.content
+                )
             }
             if q.ordered {
                 println!("</ol>");
