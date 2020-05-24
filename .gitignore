@@ -4,3 +4,6 @@ Cargo.lock
 /*.html
 .vscode
 venv
+.mypy_cache
+__pycache__
+cffi/quizdown_cffi/quizdown_cffi

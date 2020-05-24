@@ -1,6 +1,22 @@
-from .quizdown-cffi import lib, ffi
+from .quizdown_cffi import lib, ffi
+from typing import List, Optional
+import json
 
-def rust_str(result) -> str:
+
+class QOption:
+    def __init__(self, correct: bool, content: str):
+        self.correct = correct
+        self.content = content
+
+
+class Question(object):
+    def __init__(self, prompt: str, options: List[QOption], ordered: bool):
+        self.prompt = prompt
+        self.options = options
+        self.ordered = ordered
+
+
+def _rust_str(result) -> str:
     """
     Make a copy of a rust String and immediately free it!
     """
@@ -36,7 +52,7 @@ def _handle_ffi_result(ffi_result):
     error = None
     success = None
     if ffi_result.error_message != ffi.NULL:
-        error = rust_str(ffi_result.error_message)
+        error = _rust_str(ffi_result.error_message)
     if ffi_result.success != ffi.NULL:
         success = ffi_result.success
     lib.free_ffi_result(ffi_result)
@@ -49,3 +65,15 @@ def _handle_ffi_result(ffi_result):
     # return the success pointer otherwise!
     return success
 
+
+def quizdown_parse(input: str) -> List[Question]:
+    """
+    Parse some quizdown text into a sequence of questions.
+
+    raises: ValueError
+    """
+    result_json = _rust_str(
+        _handle_ffi_result(lib.parse_quizdown(input.encode("UTF-8")))
+    )
+    result = json.loads(result_json)
+    return result
