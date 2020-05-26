@@ -11,6 +11,8 @@ mod parsing;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[error("Format-Err {0:?}")]
+    Fmt(#[from] std::fmt::Error),
     #[error("IO {0:?}")]
     IO(#[from] io::Error),
     #[error("Unexpected-EOF {0}")]
@@ -27,6 +29,8 @@ pub enum Error {
     TooManyTaskLists,
     #[error("Found no options in question.")]
     NoOptionsFound,
+    #[error("Moodle requires correct answers for every question!")]
+    MoodleNoCorrectAnswer,
     #[error("Content ignored after options!")]
     ContentIgnored,
     #[error("Internal Assertion Error")]
