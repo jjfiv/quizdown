@@ -6,6 +6,7 @@ use std::io;
 #[macro_use]
 extern crate serde_derive;
 
+pub mod moodlexml;
 mod parsing;
 
 #[derive(Debug, thiserror::Error)]

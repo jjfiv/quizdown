@@ -8,3 +8,4 @@ edition = "2018"
 
 [dependencies]
 quizdown = {path="../lib"}
+clap = "2.33"
