@@ -58,12 +58,6 @@ impl SyntaxHighlighter {
         let block = self.highlight(&self.default_lang, &contents_plus_newline)?;
         debug_assert!(block.starts_with("<pre style=\""));
         Ok(format!("<pre style=\"display:inline;{}", &block[12..]))
-        // let theme = &self.ts.themes[self.theme.as_str()];
-        // let syntax_ref = self
-        //     .ss
-        //     .find_syntax_by_token(&self.default_lang)
-        //     .unwrap_or_else(|| self.ss.find_syntax_plain_text());
-        //Ok(format!("<code>{}</code>", contents))
     }
     pub(crate) fn render<'a>(
         &self,
@@ -169,7 +163,7 @@ Non-code here.
             }
         }
         assert_eq!(
-            vec!["Java code here.\n", "indented code here\n", "and here\n"],
+            vec!["Java code here.\n", "indented code here\n", "and here.\n"],
             code_lines_found
         );
     }
