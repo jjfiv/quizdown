@@ -1,5 +1,5 @@
 use crate::render::SyntaxHighlighter;
-use crate::{Config, Error, QOption, Question};
+use crate::{Error, QOption, Question};
 use pulldown_cmark::{Event, Tag};
 use std::fmt::Write;
 
