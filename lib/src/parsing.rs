@@ -1,5 +1,6 @@
-use crate::{Error, QOption, Question};
-use pulldown_cmark::{html, Event, Tag};
+use crate::render::SyntaxHighlighter;
+use crate::{Config, Error, QOption, Question};
+use pulldown_cmark::{Event, Tag};
 use std::fmt::Write;
 
 #[derive(Debug)]
@@ -15,33 +16,33 @@ pub(crate) struct HeadingChunk<'md> {
 }
 
 impl<'md> HeadingChunk<'md> {
-    pub(crate) fn finish(self) -> Question {
+    pub(crate) fn finish(self, renderer: &SyntaxHighlighter) -> Result<Question, Error> {
         let mut prompt = String::new();
         if let Some(lvl) = self.level {
             write!(prompt, "<h{}>", lvl).unwrap();
         } else {
             prompt.push_str("<b><i>");
         }
-        html::push_html(&mut prompt, self.header.iter().cloned());
+        renderer.render(&mut prompt, &self.header)?;
         if let Some(lvl) = self.level {
             write!(prompt, "</h{}>", lvl).unwrap();
         } else {
             prompt.push_str("</i></b>");
         }
-        html::push_html(&mut prompt, self.contents.iter().cloned());
+        renderer.render(&mut prompt, &self.contents)?;
         let ordered = self.options.ordered;
         let options = self
             .options
             .question_options
             .into_iter()
-            .map(|it| it.finish())
-            .collect();
+            .map(|it| it.finish(renderer))
+            .collect::<Result<Vec<_>, _>>()?;
 
-        Question {
+        Ok(Question {
             prompt,
             ordered,
             options,
-        }
+        })
     }
 }
 
@@ -58,13 +59,13 @@ struct TaskListOption<'md> {
     contents: Vec<Event<'md>>,
 }
 impl<'md> TaskListOption<'md> {
-    fn finish(self) -> QOption {
+    fn finish(self, renderer: &SyntaxHighlighter) -> Result<QOption, Error> {
         let mut content = String::new();
-        html::push_html(&mut content, self.contents.into_iter());
-        QOption {
+        renderer.render(&mut content, &self.contents)?;
+        Ok(QOption {
             correct: self.correct,
             content,
-        }
+        })
     }
 }
 

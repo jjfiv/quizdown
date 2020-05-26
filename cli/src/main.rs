@@ -83,13 +83,48 @@ fn main() -> Result<(), Error> {
                 .help("Output file name; otherwise use stdout.")
                 .takes_value(true),
         )
+        .arg(
+            Arg::with_name("theme")
+            .long("--theme")
+            .value_name("Syntax Highlighting Theme")
+            .help("TODO, list some.")
+            .takes_value(true)
+        )
+        .arg(
+            Arg::with_name("lang")
+            .long("--lang")
+            .value_name("Syntax Highlighting language for inline and unmarked code blocks.")
+            .help("e.g., java, python, etc.")
+            .takes_value(true)
+        )
         .get_matches();
+
+    let mut config = Config::default();
+    if let Some(theme) = args.value_of("theme") {
+        let available_themes = quizdown::list_themes();
+        if available_themes
+            .iter()
+            .map(|s| s.as_str())
+            .filter(|t| t == &theme)
+            .nth(0)
+            .is_none()
+        {
+            eprintln!(
+                "No such theme <{}>; try one of {:?}",
+                theme, available_themes
+            );
+        }
+        config.syntax.theme = theme.to_string();
+    }
+    if let Some(lang) = args.value_of("lang") {
+        config.syntax.default_lang = lang.to_string();
+    }
 
     let input = args
         .value_of("input")
         .expect("Input file name is required.");
     // read and process ASAP:
-    let questions = process_questions_file(&input)?;
+    let questions = process_questions_file(&input, Some(config))?;
 
     let output_file_name = args.value_of("output").unwrap_or("-");
     let format: OutputFormat = match args.value_of("format") {

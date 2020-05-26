@@ -167,7 +167,7 @@ mod tests {
 - [ ] No
 - [x] Yes
         "#;
-        let qs = process_questions_str(q_src).unwrap();
+        let qs = process_questions_str(q_src, None).unwrap();
         let qxml = to_moodle_xml(qs, course, name).unwrap();
         println!("{}", qxml);
         assert_eq!(qxml, expected);

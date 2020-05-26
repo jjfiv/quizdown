@@ -2,12 +2,15 @@ use parsing::QParser;
 use pulldown_cmark::{Event, Options, Parser};
 use std::fs;
 use std::io;
+use syntect::highlighting::ThemeSet;
 
 #[macro_use]
 extern crate serde_derive;
 
 pub mod moodlexml;
 mod parsing;
+mod render;
+pub use render::SyntaxHighlightingOptions;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -35,6 +38,16 @@ pub enum Error {
     ContentIgnored,
     #[error("Internal Assertion Error")]
     Internal,
+    #[error("Missing Syntax theme: '{0}'")]
+    MissingSyntaxTheme(String),
+    #[error("Missing Syntax for language: '{0}'")]
+    MissingSyntaxLang(String),
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
+pub struct Config {
+    pub insert_none_of_the_above: bool,
+    pub syntax: SyntaxHighlightingOptions,
 }
 
 #[derive(Serialize, Debug, Clone)]
@@ -50,8 +63,20 @@ pub struct Question {
     pub ordered: bool,
 }
 
-pub fn process_questions_str(content: &str) -> Result<Vec<Question>, Error> {
+pub fn list_themes() -> Vec<String> {
+    let ts = ThemeSet::load_defaults();
+    let mut themes = ts.themes.keys().cloned().collect::<Vec<String>>();
+    themes.sort_unstable();
+    themes
+}
+
+pub fn process_questions_str(
+    content: &str,
+    config: Option<Config>,
+) -> Result<Vec<Question>, Error> {
     let mut output = Vec::new();
+    let config = config.unwrap_or_default();
+    let highlighter = config.syntax.create()?;
 
     let mut md_opt = Options::empty();
     md_opt.insert(Options::ENABLE_STRIKETHROUGH);
@@ -63,15 +88,15 @@ pub fn process_questions_str(content: &str) -> Result<Vec<Question>, Error> {
     let mut qp = QParser::new(tokens);
 
     while let Some(chunk) = qp.parse_next()? {
-        output.push(chunk.finish());
+        output.push(chunk.finish(&highlighter)?);
     }
 
     Ok(output)
 }
 
-pub fn process_questions_file(path: &str) -> Result<Vec<Question>, Error> {
+pub fn process_questions_file(path: &str, config: Option<Config>) -> Result<Vec<Question>, Error> {
     let contents = fs::read_to_string(path)?;
-    process_questions_str(&contents)
+    process_questions_str(&contents, config)
 }
 
 #[cfg(test)]
@@ -85,7 +110,7 @@ mod tests {
 - [ ] I did it.
 - [x] Who, who, who?
         "#;
-        let qs = process_questions_str(simple_q).unwrap();
+        let qs = process_questions_str(simple_q, None).unwrap();
         assert_eq!(1, qs.len());
     }
 
@@ -97,7 +122,7 @@ mod tests {
 - I did it.
 - Who, who, who?
         "#;
-        let qs = process_questions_str(broken_q).unwrap_err();
+        let qs = process_questions_str(broken_q, None).unwrap_err();
         match qs {
             Error::NoOptionsFound => {}
             other => panic!("Expected NoOptionsFound error, got {:?}", other),

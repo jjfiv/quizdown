@@ -79,7 +79,7 @@ pub extern "C" fn parse_quizdown(text: *const c_void) -> *const FFIResult {
 
 fn try_parse_quizdown(text: *const c_void) -> Result<Vec<Question>, Box<dyn Error>> {
     let text = accept_str("text-to-parse", text)?;
-    let result = process_questions_str(text)?;
+    let result = process_questions_str(text, None)?;
     Ok(result)
 }
 

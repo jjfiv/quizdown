@@ -8,4 +8,4 @@ edition = "2018"
 
 [dependencies]
 quizdown = {path="../lib"}
-clap = "2.33"
+clap = { version = "2.33", default-features = false, features = ["suggestions", "color"] }
