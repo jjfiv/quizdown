@@ -73,7 +73,7 @@ pub extern "C" fn available_themes() -> *const c_void {
     let mut output = String::new();
     for theme in qd::list_themes() {
         if output.len() > 0 {
-            output.push(' ');
+            output.push('\t');
         }
         output.push_str(&theme);
     }

@@ -1,5 +1,5 @@
-from .quizdown_cffi import lib, ffi
-from typing import List, Optional, Dict, Any
+from .quizdown import lib, ffi
+from typing import List, Optional, Dict, Any, Set
 import json
 
 
@@ -53,6 +53,10 @@ def _handle_ffi_result(ffi_result):
     return success
 
 
+def available_themes() -> Set[str]:
+    return set(_rust_str(lib.available_themes()).split("\t"))
+
+
 def default_config() -> Dict[str, Any]:
     return json.loads(_rust_str(lib.default_config()))
 
@@ -78,12 +82,10 @@ def quizdown_render(
         config_str = config
     else:
         raise ValueError(config)
-    print(config_str)
 
     if format not in AVAILABLE_FORMATS:
         raise ValueError(format)
     of = json.dumps({format: None})
-    print(name, format, config_str)
     return _rust_str(
         _handle_ffi_result(
             lib.parse_quizdown(

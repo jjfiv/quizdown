@@ -1,10 +1,10 @@
 [package]
 name = "quizdown"
 version = "0.1.0"
-authors = ["John Foley <jjfoley@smith.edu>"]
-readme = "README.md"
-description = "Package containing Rust Toybox games."
-homepage = "https://github.com/jjfiv/idkq.org"
+authors = ["John Foley <johnf@middlebury.edu>"]
+readme = "../README.md"
+description = "A markdown subset for quickly making multiple-choice questions."
+homepage = "https://github.com/jjfiv/quizdown"
 publish = false
 edition = "2018"
 
