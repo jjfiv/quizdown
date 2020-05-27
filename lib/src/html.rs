@@ -17,7 +17,7 @@ pub fn render_html_preview(
         "<i class='quizdown-loaded'>Loaded from {:?}</i>",
         name
     )?;
-    for (i, q) in questions.iter().enumerate() {
+    for q in questions.iter() {
         output.push_str("<div class='quizdown-question'>");
         writeln!(
             &mut output,
@@ -25,7 +25,7 @@ pub fn render_html_preview(
             q.prompt
         )?;
         output.push_str(if q.ordered { "<ol>" } else { "<ul>" });
-        for opt in &q.options {
+        for (i, opt) in q.options.iter().enumerate() {
             writeln!(
                 &mut output,
                 "<li class='quizdown-option'>

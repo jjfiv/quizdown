@@ -1,0 +1,58 @@
+name: CI-OSX
+
+on:
+  release:
+    types: [published]
+  push: 
+  schedule:
+    # Runs every thursday at 23:23 GMT. This should make sure this syntax and rust dependencies do not rot for too long.
+    - cron:  '23 23 * * 4'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        platform: [ macOS-latest ]
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v1
+      - name: Setup Rust environment
+        uses: actions-rs/toolchain@v1
+        with:
+            profile: minimal
+            toolchain: stable
+            override: true
+      - name: Setup Python environment
+        uses: actions/setup-python@v1.1.1
+        with:
+          python-version: 3.5
+      - name: cargo test
+        run: |
+          cargo test --release
+      - name: py-install
+        run: |
+          pip install -r cffi/requirements.txt
+          pip install --upgrade pip
+          pip install maturin bs4
+      - name: build-wheel
+        working-directory: ./cffi
+        run: |
+          maturin build --release
+          pip install ../target/wheels/quizdown*.whl
+      - name: py-unittest
+        working-directory: ./cffi
+        run: |
+          python -I -m unittest discover -s tests -v
+      - uses: actions/upload-artifact@v1
+        name: upload-wheel
+        with:
+          name: ${{ matrix.platform }}-wheel
+          path: target/wheels/
+      - name: '[on-create] pypi-publish'
+        if: github.event_name == 'release'
+        working-directory: ./cffi
+        env: 
+          MATURIN_PASSWORD: ${{ secrets.QUIZDOWN_PYPI_TOKEN }}
+        run: maturin publish -b cffi --username __token__

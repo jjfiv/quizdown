@@ -1,0 +1,33 @@
+name: manylinux
+
+on:
+  release:
+    types: [published]
+  push: 
+  schedule:
+    # Runs every thursday at 23:23 GMT. This should make sure this syntax and rust dependencies do not rot for too long.
+    - cron:  '23 23 * * 4'
+
+jobs:
+  manylinux-build:
+    runs-on: ubuntu-latest
+    container:
+      image: konstin2/maturin:master
+    steps:
+      - name: checkout
+        uses: actions/checkout@v1
+      - name: maturin-build
+        run: |
+          rustup default 1.42.0
+          cd cffi && maturin build --release
+      - uses: actions/upload-artifact@v1
+        name: upload-wheel
+        with:
+          name: manylinux-wheel
+          path: target/wheels/
+      - name: '[on-create] pypi-publish'
+        if: github.event_name == 'release'
+        env: 
+          MATURIN_PASSWORD: ${{ secrets.QUIZDOWN_PYPI_TOKEN }}
+        run: cd cffi && maturin publish -b cffi --username __token__
+
