@@ -40,11 +40,6 @@
         <div class="row">
             <div class="column">
                 <h1 class="title">Quizdown Editor</h1>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="column">
 
                 <form>
 
@@ -61,25 +56,53 @@
                         <input class="input" type="text" id="form-lang" value="text" />
                     </div>
                     <div class="field">
-                        <label for="form-code" class="label">Quizdown Markup:</label>
+                        <label for="form-code" class="label">Quizdown Markup: (updates every 0.5s)</label>
                         <textarea id="form-code" class="textarea">
-### Headings trigger new questions.
+                            ### Minimal Q: 
 
-That means you can put multiple questions in the same file.
-
-Easy code examples!
-```python
-def take_default_list(xs = []):
-    xs.append(7)
-    return sum(xs)
-```
-
-Mark the correct answer with a github task-list!
-What is the output of ``take_default_list([1,2,3])``?
-
-- [x] It's impossible to know.
-- [ ] 13
-- [ ] Something else.
+                            any header + at least two options.
+                            
+                            - [x] Correct Option
+                            - [ ] Incorrect Options needed for Moodle.
+                            
+                            ### Markdown -> Code Highlighting
+                            
+                            ```python
+                            def take_default_list(xs = []):
+                                xs.append(7)
+                                return sum(xs) # this is a comment.
+                            ```
+                            
+                            What is the output of ``take_default_list([1,2,3])``?
+                            
+                            - [x] It's impossible to know.
+                            - [ ] 13
+                            - [ ] Something else.
+                                
+                            ### Headings trigger new questions!
+                            
+                            What is 3 + 4?
+                            
+                            Ordered options never get shuffled!
+                            
+                            1. [ ] 5
+                            2. [ ] 6
+                            3. [x] 7
+                            4. [ ] 8
+                            
+                            ## Dictionary Review:
+                            
+                            ```python
+                            x = {1: 2, 3: 4, 5: 6}
+                            print(x[4])
+                            ```
+                            What happens here?
+                            
+                            - [ ] 3
+                            - [ ] 4
+                            - [ ] True
+                            - [ ] False
+                            - [x] Crash!
     </textarea>
                     </div>
                     <div class="field">
@@ -92,6 +115,7 @@ What is the output of ``take_default_list([1,2,3])``?
             </div> <!-- column -->
 
             <div class="column">
+                <h1 class="title">Live HTML Preview</h1>
                 <div id="preview" class="">TBD</div>
             </div> <!-- column -->
         </div> <!-- columns -->
@@ -132,6 +156,7 @@ What is the output of ``take_default_list([1,2,3])``?
         export function expire_moodle_xml() {
             if (window.moodle_xml_url != null) {
                 URL.revokeObjectURL(moodle_xml_url);
+                document.getElementById("moodle-view").innerHTML = "";
             }
         }
         export function render_moodle_preview() {
@@ -140,7 +165,9 @@ What is the output of ``take_default_list([1,2,3])``?
                 expire_moodle_xml();
                 let blob = new Blob([xml], { type: 'text/xml' })
                 window.moodle_xml_url = URL.createObjectURL(blob);
-                document.getElementById("moodle-view").innerHTML = '<a class="button" href="' + window.moodle_xml_url + '">Download Moodle XML</a>';
+                let html = '<a href="' + window.moodle_xml_url + '">Download Moodle XML</a>';
+                html += '<p>Right-Click; Download and Save-As *.moodle</p>'
+                document.getElementById("moodle-view").innerHTML = html;
             } catch (e) {
                 let html = "<pre class='error'>" + e + "</pre>";
                 document.getElementById("preview").innerHTML = html;

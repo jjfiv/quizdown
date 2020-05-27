@@ -16,8 +16,8 @@ pub fn render_questions(
     let format: OutputFormat = format.into_serde().unwrap();
     let config: Config = config.into_serde().unwrap();
     let parsed =
-        process_questions_str(text, Some(config)).map_err(|e| format!("Parsing Error: {:?}", e))?;
+        process_questions_str(text, Some(config)).map_err(|e| format!("Parsing Error: {}", e))?;
     Ok(format
         .render(name, &parsed)
-        .map_err(|e| format!("Rendering Error: {:?}", e))?)
+        .map_err(|e| format!("Rendering Error: {}", e))?)
 }
