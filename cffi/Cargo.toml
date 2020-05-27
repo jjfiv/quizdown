@@ -19,9 +19,6 @@ serde_json = "1"
 serde_derive = "1"
 quizdown_lib = {path = "../lib"}
 
-[package.metadata.maturin.scripts]
-quizdown = "quizdown.__main__"
-
 [package.metadata.maturin]
 requires-dist = ["cffi"]
 classifier = [
