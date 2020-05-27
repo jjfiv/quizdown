@@ -1,0 +1,102 @@
+<html>
+
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="columns">
+            <div class="column">
+                <h1 class="title">Quizdown Editor</h1>
+                <p>What is the output of
+                    <code
+                        style="display:inline;background-color:#ffffff;"><span style="color:#323232;">take_default_list([1,2,3])</span></code>
+                    ?</p>
+            </div>
+        </div>
+
+        <div class="columns">
+            <div class="column">
+
+                <form>
+
+                    <div class="field">
+                        <label class="label">
+                            Quiz Name:
+                        </label>
+                        <input class="input" type="text" id="form-name" value="quizdown" />
+                    </div>
+                    <div class="field">
+                        <label class="label">
+                            Default Syntax Language:
+                        </label>
+                        <input class="input" type="text" id="form-lang" value="text" />
+                    </div>
+                    <div class="field">
+                        <label class="label">Quizdown Markup:</label>
+                        <textarea id="form-code" class="textarea" rows="20">
+### Headings trigger new questions.
+
+That means you can put multiple questions in the same file.
+
+Easy code examples!
+```python
+def take_default_list(xs = []):
+    xs.append(7)
+    return sum(xs)
+```
+
+Mark the correct answer with a github task-list!
+What is the output of ``take_default_list([1,2,3])``?
+
+- [x] It's impossible to know.
+- [ ] 13
+- [ ] Something else.
+    </textarea>
+                    </div>
+                    <div class="field is-grouped">
+                        <input class="button is-primary" type="button" id="render-button" value="Render" />
+                    </div>
+                </form>
+            </div> <!-- column -->
+
+            <div class="column">
+                <div id="preview" class="">TBD</div>
+            </div> <!-- column -->
+        </div> <!-- columns -->
+    </div>
+
+    <script type="module">
+        import init, { render_questions, default_config } from './pkg/wasm.js';
+
+        async function run() {
+            console.log("run");
+            await init();
+            document.getElementById("render-button").onclick = render;
+            render();
+        }
+
+        export function render() {
+            console.log("render");
+            let config = default_config();
+            console.log("config", config);
+            let name = document.getElementById("form-name").value;
+            let lang = document.getElementById("form-lang").value;
+            config.syntax.lang = lang;
+            let code = document.getElementById("form-code").value;
+            console.log("do_render", name, code, config);
+            let html = render_questions(code, name, "HtmlSnippet", config)
+            document.getElementById("preview").innerHTML = html;
+            console.log("html", html);
+        }
+        run();
+
+    </script>
+</body>
+
+</html>

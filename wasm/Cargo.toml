@@ -1,0 +1,15 @@
+[package]
+name = "wasm"
+version = "0.1.0"
+authors = ["John Foley <jjfoley@smith.edu>"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = "1"
+serde_derive = "1"
+wasm-bindgen = { version="0.2", features=["serde-serialize"] }
+quizdown = {path="../lib"}

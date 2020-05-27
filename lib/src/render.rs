@@ -1,7 +1,11 @@
 use crate::Error;
 use pulldown_cmark::{html, CodeBlockKind, CowStr, Event, Tag};
+use syntect::easy::HighlightLines;
 use syntect::highlighting::ThemeSet;
-use syntect::html::highlighted_html_for_string;
+use syntect::html::{
+    append_highlighted_html_for_styled_line, highlighted_html_for_string,
+    start_highlighted_html_snippet, IncludeBackground,
+};
 use syntect::parsing::SyntaxSet;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -53,11 +57,26 @@ impl SyntaxHighlighter {
         ))
     }
     fn highlight_inline(&self, contents: &str) -> Result<String, Error> {
-        // TODO: smarter!
-        let contents_plus_newline = format!("{}\n", contents.trim());
-        let block = self.highlight(&self.default_lang, &contents_plus_newline)?;
-        debug_assert!(block.starts_with("<pre style=\""));
-        Ok(format!("<pre style=\"display:inline;{}", &block[12..]))
+        let theme = &self.ts.themes[self.theme.as_str()];
+        let syntax_ref = self
+            .ss
+            .find_syntax_by_token(&self.default_lang)
+            .unwrap_or_else(|| self.ss.find_syntax_plain_text());
+        let mut highlighter = HighlightLines::new(syntax_ref, theme);
+        let mut output = String::new();
+        let (pre_start, bg) = start_highlighted_html_snippet(theme);
+        debug_assert!(pre_start.starts_with("<pre style=\""));
+        output.push_str("<code ");
+        output.push_str(pre_start[4..].trim());
+
+        let regions = highlighter.highlight(contents, &self.ss);
+        append_highlighted_html_for_styled_line(
+            &regions[..],
+            IncludeBackground::IfDifferent(bg),
+            &mut output,
+        );
+        output.push_str("</code>\n");
+        Ok(output)
     }
     pub(crate) fn render<'a>(
         &self,
@@ -123,6 +142,26 @@ fn syntax_highlight_html<'a>(
 mod tests {
     use super::*;
     use pulldown_cmark::{Options, Parser};
+
+    #[test]
+    fn test_inline_in_para() {
+        let contents = "What is the output of ``f1(3)``?";
+        let mut md_opt = Options::empty();
+        md_opt.insert(Options::ENABLE_STRIKETHROUGH);
+        md_opt.insert(Options::ENABLE_TABLES);
+        md_opt.insert(Options::ENABLE_TASKLISTS);
+        let parser = Parser::new_ext(contents, md_opt);
+
+        let tokens = parser.collect::<Vec<Event>>();
+        println!("{:?}", tokens);
+
+        let opts = SyntaxHighlightingOptions::default();
+        let renderer = opts.create().unwrap();
+        let mut html = String::new();
+        renderer.render(&mut html, &tokens).unwrap();
+        println!("html={}", html);
+        assert_eq!("<p>What is the output of <code style=\"background-color:#ffffff;\"><span style=\"color:#323232;\">f1(3)</span></code>\n?</p>\n", html);
+    }
 
     #[test]
     fn test_code_block_events() {

@@ -7,10 +7,32 @@ use syntect::highlighting::ThemeSet;
 #[macro_use]
 extern crate serde_derive;
 
+pub mod html;
 pub mod moodlexml;
 mod parsing;
 mod render;
 pub use render::SyntaxHighlightingOptions;
+
+#[derive(Serialize, Deserialize, Ord, PartialOrd, Eq, PartialEq, Clone, Debug, Copy)]
+pub enum OutputFormat {
+    /// Render HTML with title, body, etc. for file preview.
+    HtmlFull,
+    /// Render just the HTML for the questions themselves.
+    HtmlSnippet,
+    /// MoodleXML import format.
+    MoodleXml,
+}
+
+impl OutputFormat {
+    pub fn render(&self, name: &str, questions: &[Question]) -> Result<String, Error> {
+        Ok(match self {
+            OutputFormat::HtmlFull | OutputFormat::HtmlSnippet => {
+                html::render_html_preview(name, questions, self == &OutputFormat::HtmlFull)?
+            }
+            OutputFormat::MoodleXml => moodlexml::to_moodle_xml(questions, name)?,
+        })
+    }
+}
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {

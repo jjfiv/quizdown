@@ -6,7 +6,7 @@ const TEXT_NODE: &str = "text";
 const QUIZ_NODE: &str = "quiz";
 const QUESTION_NODE: &str = "question";
 
-pub fn to_moodle_xml(qs: Vec<Question>, course: &str, name: &str) -> Result<String, Error> {
+pub fn to_moodle_xml(qs: &[Question], name: &str) -> Result<String, Error> {
     let opt = Options {
         ..Options::default()
     };
@@ -26,8 +26,6 @@ pub fn to_moodle_xml(qs: Vec<Question>, course: &str, name: &str) -> Result<Stri
     //  </quiz>
     //
 
-    let base_name = format!("{}/{}", course, name);
-
     xml.write_declaration();
     xml.start_element(QUIZ_NODE);
 
@@ -35,12 +33,12 @@ pub fn to_moodle_xml(qs: Vec<Question>, course: &str, name: &str) -> Result<Stri
     xml.write_attribute("type", "category");
     xml.start_element("category");
 
-    write_tag_str(&mut xml, "text", &base_name);
+    write_tag_str(&mut xml, "text", name);
     xml.end_element(); // </category>
     xml.end_element(); // </question>
 
     for (i, q) in qs.iter().enumerate() {
-        write_multichoice(&mut xml, q, &base_name, i)?;
+        write_multichoice(&mut xml, q, name, i)?;
     }
 
     // </quiz>
@@ -158,8 +156,7 @@ mod tests {
         expected.push_str("<answer fraction=\"-100\" format=\"html\"><text>No</text><feedback><text>Sorry, that\'s not correct!</text></feedback></answer>");
         expected.push_str("<answer fraction=\"100.00000\" format=\"html\"><text>Yes</text><feedback><text>Correct!</text></feedback></answer>");
         expected.push_str("<shuffleanswers>1</shuffleanswers><single>false</single><answernumbering>abc</answernumbering></question></quiz>");
-        let course = "cs101";
-        let name = "ex";
+        let question_bank = "cs101/ex";
 
         let q_src = r#"
 ## Do you want to build a snowman?
@@ -168,7 +165,7 @@ mod tests {
 - [x] Yes
         "#;
         let qs = process_questions_str(q_src, None).unwrap();
-        let qxml = to_moodle_xml(qs, course, name).unwrap();
+        let qxml = to_moodle_xml(&qs, question_bank).unwrap();
         println!("{}", qxml);
         assert_eq!(qxml, expected);
     }
