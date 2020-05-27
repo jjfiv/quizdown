@@ -120,6 +120,7 @@ fn syntax_highlight_html<'a>(
                     }
                     i += 1;
                 }
+
                 with_highlight.push(Event::Html(CowStr::from(
                     syntax.highlight(lang, &current_block_html)?,
                 )));
