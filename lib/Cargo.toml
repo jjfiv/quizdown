@@ -1,5 +1,5 @@
 [package]
-name = "quizdown"
+name = "quizdown_lib"
 version = "0.1.0"
 authors = ["John Foley <jjfoley@smith.edu>"]
 edition = "2018"

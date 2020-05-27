@@ -1,5 +1,5 @@
 [package]
-name = "quizdown-cffi"
+name = "quizdown"
 version = "0.1.0"
 authors = ["John Foley <jjfoley@smith.edu>"]
 readme = "README.md"
@@ -9,7 +9,7 @@ publish = false
 edition = "2018"
 
 [lib]
-name = "quizdown_cffi"
+name = "quizdown"
 crate-type = ["cdylib"]
 
 [dependencies]
@@ -17,7 +17,7 @@ libc = "0.2"
 serde = "1"
 serde_json = "1"
 serde_derive = "1"
-quizdown = {path = "../lib"}
+quizdown_lib = {path = "../lib"}
 
 [package.metadata.maturin]
 requires-dist = ["cffi"]

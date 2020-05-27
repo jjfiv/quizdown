@@ -1,4 +1,4 @@
-use quizdown::{process_questions_str, Config, OutputFormat};
+use quizdown_lib::{process_questions_str, Config, OutputFormat};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

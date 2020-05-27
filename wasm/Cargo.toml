@@ -12,4 +12,4 @@ crate-type = ["cdylib"]
 serde = "1"
 serde_derive = "1"
 wasm-bindgen = { version="0.2", features=["serde-serialize"] }
-quizdown = {path="../lib"}
+quizdown_lib = {path="../lib"}

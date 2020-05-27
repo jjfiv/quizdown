@@ -1,7 +1,6 @@
 use clap::{App, Arg};
 use io::Write;
-use quizdown::html::render_html_preview;
-use quizdown::*;
+use quizdown_lib::*;
 use std::fs::File;
 use std::io;
 
@@ -57,7 +56,7 @@ fn main() -> Result<(), Error> {
 
     let mut config = Config::default();
     if let Some(theme) = args.value_of("theme") {
-        let available_themes = quizdown::list_themes();
+        let available_themes = quizdown_lib::list_themes();
         if available_themes
             .iter()
             .map(|s| s.as_str())

@@ -1,7 +1,7 @@
 #![crate_type = "dylib"]
 
 use libc::{c_char, c_void};
-use quizdown::{process_questions_str, Config, OutputFormat, Question};
+use quizdown_lib as qd;
 use std::error::Error;
 use std::ffi::{CStr, CString};
 use std::ptr;
@@ -69,8 +69,20 @@ pub(crate) fn result_to_ffi(rust_result: Result<String, Box<dyn Error>>) -> *con
 }
 
 #[no_mangle]
+pub extern "C" fn available_themes() -> *const c_void {
+    let mut output = String::new();
+    for theme in qd::list_themes() {
+        if output.len() > 0 {
+            output.push(' ');
+        }
+        output.push_str(&theme);
+    }
+    return_string(&output)
+}
+
+#[no_mangle]
 pub extern "C" fn default_config() -> *const c_void {
-    return_string(&serde_json::to_string(&Config::default()).unwrap())
+    return_string(&serde_json::to_string(&qd::Config::default()).unwrap())
 }
 
 /// This is our main interface to the library.
@@ -92,11 +104,11 @@ fn try_parse_quizdown(
 ) -> Result<String, Box<dyn Error>> {
     let text = accept_str("text-to-parse", text)?;
     let name = accept_str("quiz_name", name)?;
-    let format: OutputFormat = serde_json::from_str(accept_str("format", format)?)?;
-    let config: Config = serde_json::from_str(accept_str("config", config)?)?;
+    let format: qd::OutputFormat = serde_json::from_str(accept_str("format", format)?)?;
+    let config: qd::Config = serde_json::from_str(accept_str("config", config)?)?;
 
-    let parsed =
-        process_questions_str(text, Some(config)).map_err(|e| format!("Parsing Error: {}", e))?;
+    let parsed = qd::process_questions_str(text, Some(config))
+        .map_err(|e| format!("Parsing Error: {}", e))?;
     Ok(format
         .render(name, &parsed)
         .map_err(|e| format!("Rendering Error: {}", e))?)
