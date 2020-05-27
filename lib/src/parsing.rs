@@ -1,7 +1,7 @@
 use crate::render::SyntaxHighlighter;
 use crate::{Error, QOption, Question};
-use pulldown_cmark::{Event, Tag};
-use std::fmt::Write;
+use pulldown_cmark::{Event, Parser, Tag};
+use std::{fmt::Write, ops::Range};
 
 #[derive(Debug)]
 pub(crate) struct HeadingChunk<'md> {
@@ -71,14 +71,22 @@ impl<'md> TaskListOption<'md> {
 
 pub(crate) struct QParser<'md> {
     tokens: Vec<Event<'md>>,
+    spans: Vec<Range<usize>>,
     position: usize,
     list_stack: Vec<usize>,
 }
 
 impl<'md> QParser<'md> {
-    pub(crate) fn new(tokens: Vec<Event<'md>>) -> Self {
+    pub(crate) fn new(parser: Parser<'md>) -> Self {
+        let mut tokens = Vec::new();
+        let mut spans = Vec::new();
+        for (tok, span) in parser.into_offset_iter() {
+            tokens.push(tok);
+            spans.push(span);
+        }
         Self {
             tokens,
+            spans,
             position: 0,
             list_stack: Vec::new(),
         }

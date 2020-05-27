@@ -3,43 +3,66 @@
 <head>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.css">
     <style>
+        .quizdown-question {
+            background-color: #eee;
+            border-radius: 4pt;
+            padding: 8pt;
+        }
 
+        #preview {
+            background-color: #ccc;
+            padding: 8pt;
+        }
+
+        .quizdown-label {
+            display: inline;
+        }
+
+        pre {
+            padding-left: 8pt;
+        }
+
+        textarea#form-code {
+            height: 400pt;
+        }
+
+        li {
+            margin: 0;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <div class="columns">
+        <div class="row">
             <div class="column">
                 <h1 class="title">Quizdown Editor</h1>
-                <p>What is the output of
-                    <code
-                        style="display:inline;background-color:#ffffff;"><span style="color:#323232;">take_default_list([1,2,3])</span></code>
-                    ?</p>
             </div>
         </div>
 
-        <div class="columns">
+        <div class="row">
             <div class="column">
 
                 <form>
 
                     <div class="field">
-                        <label class="label">
-                            Quiz Name:
+                        <label for="form-name" class="label">
+                            Quiz Name: (becomes a "Question Bank" in Moodle)
                         </label>
                         <input class="input" type="text" id="form-name" value="quizdown" />
                     </div>
                     <div class="field">
-                        <label class="label">
+                        <label for="form-lang" class="label">
                             Default Syntax Language:
                         </label>
                         <input class="input" type="text" id="form-lang" value="text" />
                     </div>
                     <div class="field">
-                        <label class="label">Quizdown Markup:</label>
-                        <textarea id="form-code" class="textarea" rows="20">
+                        <label for="form-code" class="label">Quizdown Markup:</label>
+                        <textarea id="form-code" class="textarea">
 ### Headings trigger new questions.
 
 That means you can put multiple questions in the same file.
@@ -59,8 +82,11 @@ What is the output of ``take_default_list([1,2,3])``?
 - [ ] Something else.
     </textarea>
                     </div>
-                    <div class="field is-grouped">
-                        <input class="button is-primary" type="button" id="render-button" value="Render" />
+                    <div class="field">
+                        <input class="button" type="button" id="render-button" value="Get MoodleXML download link" />
+                    </div>
+
+                    <div id="moodle-view">
                     </div>
                 </form>
             </div> <!-- column -->
@@ -74,25 +100,61 @@ What is the output of ``take_default_list([1,2,3])``?
     <script type="module">
         import init, { render_questions, default_config } from './pkg/wasm.js';
 
+        window.last_code = "";
+        export function render_if_code_changed() {
+            let now = document.getElementById("form-code").value;
+            if (now != window.last_code) {
+                window.last_code = now;
+                expire_moodle_xml();
+                render_html_preview();
+            }
+        }
         async function run() {
             console.log("run");
             await init();
-            document.getElementById("render-button").onclick = render;
-            render();
+            document.getElementById("render-button").onclick = render_moodle_preview
+            window.code = document.getElementById("form-code").value;
+            window.setInterval(render_if_code_changed, 500);
+            render_if_code_changed();
         }
 
-        export function render() {
-            console.log("render");
+        export function render_html_preview() {
+            let html = null;
+            try {
+                html = render("HtmlSnippet");
+                //render_moodle_preview();
+            } catch (e) {
+                html = "<pre class='error'>" + e + "</pre>";
+            }
+            document.getElementById("preview").innerHTML = html;
+        }
+        window.moodle_xml_url = null;
+        export function expire_moodle_xml() {
+            if (window.moodle_xml_url != null) {
+                URL.revokeObjectURL(moodle_xml_url);
+            }
+        }
+        export function render_moodle_preview() {
+            try {
+                let xml = render("MoodleXml");
+                expire_moodle_xml();
+                let blob = new Blob([xml], { type: 'text/xml' })
+                window.moodle_xml_url = URL.createObjectURL(blob);
+                document.getElementById("moodle-view").innerHTML = '<a class="button" href="' + window.moodle_xml_url + '">Download Moodle XML</a>';
+            } catch (e) {
+                let html = "<pre class='error'>" + e + "</pre>";
+                document.getElementById("preview").innerHTML = html;
+                return;
+            }
+        }
+
+        export function render(kind) {
             let config = default_config();
-            console.log("config", config);
             let name = document.getElementById("form-name").value;
             let lang = document.getElementById("form-lang").value;
             config.syntax.lang = lang;
             let code = document.getElementById("form-code").value;
-            console.log("do_render", name, code, config);
-            let html = render_questions(code, name, "HtmlSnippet", config)
-            document.getElementById("preview").innerHTML = html;
-            console.log("html", html);
+            return render_questions(code, name, kind, config)
         }
         run();
 

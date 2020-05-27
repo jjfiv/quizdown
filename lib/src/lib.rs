@@ -1,7 +1,7 @@
 use parsing::QParser;
 use pulldown_cmark::{Event, Options, Parser};
 use std::fs;
-use std::io;
+use std::{io, ops::Range};
 use syntect::highlighting::ThemeSet;
 
 #[macro_use]
@@ -105,9 +105,7 @@ pub fn process_questions_str(
     md_opt.insert(Options::ENABLE_TABLES);
     md_opt.insert(Options::ENABLE_TASKLISTS);
     let parser = Parser::new_ext(content, md_opt);
-
-    let tokens = parser.collect::<Vec<Event>>();
-    let mut qp = QParser::new(tokens);
+    let mut qp = QParser::new(parser);
 
     while let Some(chunk) = qp.parse_next()? {
         output.push(chunk.finish(&highlighter)?);

@@ -19,17 +19,27 @@ pub fn render_html_preview(
     }
     writeln!(
         &mut output,
-        "<div class='question'><i>Loaded from {:?}</i>",
+        "<i class='quizdown-loaded'>Loaded from {:?}</i>",
         name
     )?;
-    for q in questions {
-        writeln!(&mut output, "<div class='prompt'>{}</div>", q.prompt)?;
+    for (i, q) in questions.iter().enumerate() {
+        output.push_str("<div class='quizdown-question'>");
+        writeln!(
+            &mut output,
+            "<div class='quizdown-prompt'>{}</div>",
+            q.prompt
+        )?;
         output.push_str(if q.ordered { "<ol>" } else { "<ul>" });
         for opt in &q.options {
             writeln!(
                 &mut output,
-                "<li><label>
-                    <input type='checkbox' />{}</label></li>",
+                "<li class='quizdown-option'>
+                    <input id='opt{}' type='checkbox' {} />
+                    <label class='quizdown-label' for='opt{}'>{}</label>
+                </li>",
+                i,
+                if opt.correct { "checked" } else { "" },
+                i,
                 opt.content
             )?;
         }
