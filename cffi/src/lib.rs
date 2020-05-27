@@ -1,7 +1,7 @@
 #![crate_type = "dylib"]
 
 use libc::{c_char, c_void};
-use quizdown::{process_questions_str, Question};
+use quizdown::{process_questions_str, Config, OutputFormat, Question};
 use std::error::Error;
 use std::ffi::{CStr, CString};
 use std::ptr;
@@ -50,14 +50,11 @@ pub(crate) fn return_string(output: &str) -> *const c_void {
     CString::into_raw(c_output) as *const c_void
 }
 
-pub(crate) fn result_to_ffi<T>(rust_result: Result<T, Box<dyn Error>>) -> *const FFIResult
-where
-    T: serde::Serialize,
-{
+pub(crate) fn result_to_ffi(rust_result: Result<String, Box<dyn Error>>) -> *const FFIResult {
     let mut c_result = Box::new(FFIResult::default());
     match rust_result {
         Ok(item) => {
-            c_result.success = return_string(&serde_json::to_string(&item).unwrap());
+            c_result.success = return_string(&item);
         }
         Err(e) => {
             let error_message = serde_json::to_string(&ErrorMessage {
@@ -71,16 +68,38 @@ where
     Box::into_raw(c_result)
 }
 
-/// This is our main interface to the library.
 #[no_mangle]
-pub extern "C" fn parse_quizdown(text: *const c_void) -> *const FFIResult {
-    result_to_ffi(try_parse_quizdown(text))
+pub extern "C" fn default_config() -> *const c_void {
+    return_string(&serde_json::to_string(&Config::default()).unwrap())
 }
 
-fn try_parse_quizdown(text: *const c_void) -> Result<Vec<Question>, Box<dyn Error>> {
+/// This is our main interface to the library.
+#[no_mangle]
+pub extern "C" fn parse_quizdown(
+    text: *const c_void,
+    name: *const c_void,
+    format: *const c_void,
+    config: *const c_void,
+) -> *const FFIResult {
+    result_to_ffi(try_parse_quizdown(text, name, format, config))
+}
+
+fn try_parse_quizdown(
+    text: *const c_void,
+    name: *const c_void,
+    format: *const c_void,
+    config: *const c_void,
+) -> Result<String, Box<dyn Error>> {
     let text = accept_str("text-to-parse", text)?;
-    let result = process_questions_str(text, None)?;
-    Ok(result)
+    let name = accept_str("quiz_name", name)?;
+    let format: OutputFormat = serde_json::from_str(accept_str("format", format)?)?;
+    let config: Config = serde_json::from_str(accept_str("config", config)?)?;
+
+    let parsed =
+        process_questions_str(text, Some(config)).map_err(|e| format!("Parsing Error: {}", e))?;
+    Ok(format
+        .render(name, &parsed)
+        .map_err(|e| format!("Rendering Error: {}", e))?)
 }
 
 /// Returns true if it received a non-null string to free.

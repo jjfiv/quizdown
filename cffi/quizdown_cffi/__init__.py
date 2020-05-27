@@ -1,19 +1,6 @@
 from .quizdown_cffi import lib, ffi
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 import json
-
-
-class QOption:
-    def __init__(self, correct: bool, content: str):
-        self.correct = correct
-        self.content = content
-
-
-class Question(object):
-    def __init__(self, prompt: str, options: List[QOption], ordered: bool):
-        self.prompt = prompt
-        self.options = options
-        self.ordered = ordered
 
 
 def _rust_str(result) -> str:
@@ -66,14 +53,44 @@ def _handle_ffi_result(ffi_result):
     return success
 
 
-def quizdown_parse(input: str) -> List[Question]:
+def default_config() -> Dict[str, Any]:
+    return json.loads(_rust_str(lib.default_config()))
+
+
+AVAILABLE_FORMATS = ["HtmlSnippet", "HtmlFull", "MoodleXml"]
+
+
+def quizdown_render(
+    input: str, name: str = "quizdown", format: str = "MoodleXml", config=None
+) -> str:
     """
     Parse some quizdown text into a sequence of questions.
 
     raises: ValueError
     """
-    result_json = _rust_str(
-        _handle_ffi_result(lib.parse_quizdown(input.encode("UTF-8")))
+    if config is None:
+        config = default_config()
+
+    config_str = ""
+    if type(config) is dict:
+        config_str = json.dumps(config)
+    elif type(config) is str:
+        config_str = config
+    else:
+        raise ValueError(config)
+    print(config_str)
+
+    if format not in AVAILABLE_FORMATS:
+        raise ValueError(format)
+    of = json.dumps({format: None})
+    print(name, format, config_str)
+    return _rust_str(
+        _handle_ffi_result(
+            lib.parse_quizdown(
+                input.encode("UTF-8"),
+                name.encode("UTF-8"),
+                of.encode("UTF-8"),
+                config_str.encode("UTF-8"),
+            )
+        )
     )
-    result = json.loads(result_json)
-    return result

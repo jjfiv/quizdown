@@ -1,4 +1,4 @@
-from . import quizdown_parse
+from . import quizdown_render
 
 # TODO implement cli in python.
 test = """
@@ -8,4 +8,4 @@ test = """
 - [ ] No.
 - [ ] I hope so?...
 """
-print(quizdown_parse(test))
+print(quizdown_render(test, format="HtmlFull"))
