@@ -37,12 +37,12 @@
             <render_choice>
               <response_label ident="2837">
                 <material>
-                  <mattext texttype="text/plain">2 + 2</mattext>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;strong&gt;2 + 2&lt;/strong&gt;&lt;/p&gt;</mattext>
                 </material>
               </response_label>
               <response_label ident="1456">
                 <material>
-                  <mattext texttype="text/plain">2 * 2</mattext>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;strong&gt;2 * 2&lt;/strong&gt;&lt;/p&gt;</mattext>
                 </material>
               </response_label>
               <response_label ident="3906">
@@ -76,18 +76,14 @@
             <conditionvar>
               <and>
                 <varequal respident="response1">2837</varequal>
-                <not>
-                  <varequal respident="response1">1456</varequal>
-                </not>
+                <varequal respident="response1">1456</varequal>
                 <not>
                   <varequal respident="response1">3906</varequal>
                 </not>
                 <not>
                   <varequal respident="response1">6376</varequal>
                 </not>
-                <not>
-                  <varequal respident="response1">9658</varequal>
-                </not>
+                <varequal respident="response1">9658</varequal>
                 <not>
                   <varequal respident="response1">6576</varequal>
                 </not>
