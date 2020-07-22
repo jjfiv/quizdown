@@ -1,7 +1,9 @@
 /target
 Cargo.lock
 /data
-/*.html
+*.html
+*.json
+*.moodle
 .vscode
 venv
 .mypy_cache

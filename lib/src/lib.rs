@@ -21,6 +21,14 @@ pub enum OutputFormat {
     HtmlSnippet,
     /// MoodleXML import format.
     MoodleXml,
+    /// JSON output format (also for FFI to Python)
+    JSON,
+}
+
+#[derive(Serialize)]
+struct OutputQuestions<'a> {
+    name: &'a str,
+    questions: &'a [Question],
 }
 
 impl OutputFormat {
@@ -30,6 +38,7 @@ impl OutputFormat {
                 html::render_html_preview(name, questions, self == &OutputFormat::HtmlFull)?
             }
             OutputFormat::MoodleXml => moodlexml::to_moodle_xml(questions, name)?,
+            OutputFormat::JSON => serde_json::to_string(&OutputQuestions { name, questions })?,
         })
     }
 }
@@ -64,6 +73,8 @@ pub enum Error {
     MissingSyntaxTheme(String),
     #[error("Missing Syntax for language: '{0}'")]
     MissingSyntaxLang(String),
+    #[error("JSON Error: {0}")]
+    JSONError(#[from] serde_json::Error),
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]

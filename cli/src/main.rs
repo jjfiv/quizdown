@@ -90,11 +90,14 @@ fn main() -> Result<(), Error> {
                 OutputFormat::HtmlFull
             } else if output_file_name.ends_with(".moodle") {
                 OutputFormat::MoodleXml
+            } else if output_file_name.ends_with(".json") {
+                OutputFormat::JSON
             } else {
                 panic!("Must provide a file format (--format=html) or an obvious output file e.g., '.html'");
             }
         }
         Some("html") => OutputFormat::HtmlFull,
+        Some("json") => OutputFormat::JSON,
         Some("moodle") => OutputFormat::MoodleXml,
         Some(other) => panic!("Unknown format '{}'.", other),
     };

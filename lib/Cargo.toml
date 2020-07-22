@@ -9,5 +9,6 @@ pulldown-cmark = "0.7"
 thiserror = "1"
 serde = "1"
 serde_derive = "1"
+serde_json = "1"
 xmlwriter = "0.1"
 syntect = { version = "4.2", default-features = false, features = ["default-fancy"]}

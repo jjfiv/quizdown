@@ -71,6 +71,8 @@ if not format:
     (base, ext) = os.path.splitext(args.output)
     if ext == ".html":
         format = "HtmlFull"
+    elif ext == ".json":
+        format = "JSON"
     elif ext == ".moodle":
         format = "MoodleXml"
     else:
