@@ -1,7 +1,7 @@
 use parsing::QParser;
-use pulldown_cmark::{Event, Options, Parser};
+use pulldown_cmark::{Options, Parser};
 use std::fs;
-use std::{io, ops::Range};
+use std::io;
 use syntect::highlighting::ThemeSet;
 
 #[macro_use]

@@ -1,4 +1,5 @@
 from .quizdown import lib, ffi
+from .types import Quiz, Question, QOption
 from typing import List, Optional, Dict, Any, Set
 import json
 
@@ -61,7 +62,7 @@ def default_config() -> Dict[str, Any]:
     return json.loads(_rust_str(lib.default_config()))
 
 
-AVAILABLE_FORMATS = ["HtmlSnippet", "HtmlFull", "MoodleXml"]
+AVAILABLE_FORMATS = ["HtmlSnippet", "HtmlFull", "MoodleXml", "JSON"]
 
 
 def quizdown_render(
@@ -96,3 +97,12 @@ def quizdown_render(
             )
         )
     )
+
+
+def quizdown_to_py(input: str, name: str) -> Quiz:
+    """
+    Parse some quizdown text into a Quiz object.
+
+    raises: ValueError
+    """
+    return Quiz.from_dict(json.loads(quizdown_render(input, name, "JSON")))

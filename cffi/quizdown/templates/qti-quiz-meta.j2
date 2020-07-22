@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<quiz identifier="g33f7a0baeb3b414ebad6dcd2801c8e76" xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">
-  <title>ReadingQuiz</title>
+<quiz identifier="{{quiz.uid}}" xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">
+  <title>{{title}}</title>
   <description></description>
-  <lock_at>2020-10-01T03:59:00</lock_at>
-  <unlock_at>2020-09-15T04:00:00</unlock_at>
-  <due_at>2020-09-21T03:59:00</due_at>
+  <lock_at />
+  <unlock_at />
+  <due_at />
   <shuffle_answers>true</shuffle_answers>
   <scoring_policy>keep_highest</scoring_policy>
   <hide_results></hide_results>
   <quiz_type>assignment</quiz_type>
-  <points_possible>2.0</points_possible>
+  <points_possible>{{points_possible}}</points_possible>
   <require_lockdown_browser>false</require_lockdown_browser>
   <require_lockdown_browser_for_results>false</require_lockdown_browser_for_results>
   <require_lockdown_browser_monitor>false</require_lockdown_browser_monitor>
@@ -26,22 +26,20 @@
   <show_correct_answers_last_attempt>false</show_correct_answers_last_attempt>
   <only_visible_to_overrides>false</only_visible_to_overrides>
   <module_locked>false</module_locked>
-  <assignment identifier="g0baa8de0f5daae842f81d4818c291932">
-    <title>ReadingQuiz</title>
-    <due_at>2020-09-21T03:59:00</due_at>
-    <lock_at>2020-10-01T03:59:00</lock_at>
-    <unlock_at>2020-09-15T04:00:00</unlock_at>
+  <assignment identifier="{{assignment_identifier}}">
+    <title>{{title}}</title>
+    <lock_at />
+    <unlock_at />
+    <due_at />
     <module_locked>false</module_locked>
-    <all_day_date>2020-09-20</all_day_date>
     <workflow_state>unpublished</workflow_state>
     <assignment_overrides>
     </assignment_overrides>
-    <quiz_identifierref>g33f7a0baeb3b414ebad6dcd2801c8e76</quiz_identifierref>
+    <quiz_identifierref>{{quiz.uid}}</quiz_identifierref>
     <allowed_extensions></allowed_extensions>
     <has_group_category>false</has_group_category>
-    <points_possible>2.0</points_possible>
+    <points_possible>{{points_possible}}</points_possible>
     <grading_type>points</grading_type>
-    <all_day>true</all_day>
     <submission_types>online_quiz</submission_types>
     <position>1</position>
     <turnitin_enabled>false</turnitin_enabled>
@@ -67,7 +65,4 @@
       <post_manually>false</post_manually>
     </post_policy>
   </assignment>
-  <assignment_group_identifierref>g5c6539ff490aaaff78154a90cb1612f7</assignment_group_identifierref>
-  <assignment_overrides>
-  </assignment_overrides>
 </quiz>

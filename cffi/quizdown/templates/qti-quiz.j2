@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<questestinterop xmlns="http://www.imsglobal.org/xsd/ims_qtiasiv1p2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/ims_qtiasiv1p2 http://www.imsglobal.org/xsd/ims_qtiasiv1p2p1.xsd">
+  <assessment ident="{{quiz.uid}}" title="{{title}}">
+    <qtimetadata>
+      <qtimetadatafield>
+        <fieldlabel>cc_maxattempts</fieldlabel>
+        <fieldentry>unlimited</fieldentry>
+      </qtimetadatafield>
+    </qtimetadata>
+    <section ident="root_section">
+      {% for q in questions %}
+      {% set qindex = loop.index %}
+      <item ident="{{q.uid}}" title="Question">
+        <itemmetadata>
+          <qtimetadata>
+            <qtimetadatafield>
+              <fieldlabel>question_type</fieldlabel>
+              <fieldentry>multiple_answers_question</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>points_possible</fieldlabel>
+              <fieldentry>1.0</fieldentry>
+            </qtimetadatafield>
+          </qtimetadata>
+        </itemmetadata>
+        <presentation>
+          <material>
+            <mattext texttype="text/html">{{q.prompt | escape}}</mattext>
+          </material>
+          <response_lid ident="response{{qindex}}" rcardinality="Multiple">
+            <render_choice>
+              {% for opt in q.options %}
+              <response_label ident="{{opt.uid}}">
+                <material>
+                  <mattext texttype="text/html">{{opt.content | escape}}</mattext>
+                </material>
+              </response_label>
+              {% endfor %}
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <outcomes>
+            <decvar maxvalue="100" minvalue="0" varname="SCORE" vartype="Decimal"/>
+          </outcomes>
+          <respcondition continue="No">
+            <conditionvar>
+              <and>
+                {% for opt in q.options %}
+                  {% if opt.correct %}
+                    <varequal respident="response{{qindex}}">{{opt.uid}}</varequal>
+                  {% else %}
+                    <not>
+                      <varequal respident="response{{qindex}}">{{opt.uid}}</varequal>
+                    </not>
+                  {% endif %}
+                {% endfor %}
+              </and>
+            </conditionvar>
+            <setvar action="Set" varname="SCORE">100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      {% endfor %}
+    </section>
+  </assessment>
+</questestinterop>
