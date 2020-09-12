@@ -1,6 +1,6 @@
 [package]
 name = "quizdown"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["John Foley <johnf@middlebury.edu>"]
 readme = "../README.md"
 description = "A markdown subset for quickly making multiple-choice questions."
