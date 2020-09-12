@@ -1,6 +1,6 @@
 [package]
 name = "quizdown"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["John Foley <johnf@middlebury.edu>"]
 readme = "../README.md"
 description = "A markdown subset for quickly making multiple-choice questions."
@@ -20,8 +20,8 @@ serde_derive = "1"
 quizdown_lib = {path = "../lib"}
 
 [package.metadata.maturin]
-requires-dist = ["cffi"]
+requires-dist = ["cffi", "attrs", "jinja2"]
 classifier = [
-  "Programming Language :: Python :: 3.5",
+  "Programming Language :: Python :: 3.6",
   "Operating System :: OS Independent",
 ]
