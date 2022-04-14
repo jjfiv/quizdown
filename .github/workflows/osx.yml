@@ -25,9 +25,9 @@ jobs:
             toolchain: stable
             override: true
       - name: Setup Python environment
-        uses: actions/setup-python@v1.1.1
+        uses: actions/setup-python@v3.1.2
         with:
-          python-version: 3.6
+          python-version: 3.7
       - name: cargo test
         run: |
           cargo test --release
