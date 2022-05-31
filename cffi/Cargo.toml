@@ -18,6 +18,8 @@ serde = "1"
 serde_json = "1"
 serde_derive = "1"
 quizdown_lib = {path = "../lib"}
+pyo3 = {version="0.13", features=["extension-module", "abi3-py36"]}
+
 
 [package.metadata.maturin]
 requires-dist = ["cffi", "attrs", "jinja2"]
