@@ -19,7 +19,7 @@ jobs:
       - name: maturin-build
         run: |
           rustup default 1.60.0
-          cd cffi && maturin build --release
+          cd python && maturin build --release
       - uses: actions/upload-artifact@v1
         name: upload-wheel
         with:
@@ -29,5 +29,5 @@ jobs:
         if: github.event_name == 'release'
         env: 
           MATURIN_PASSWORD: ${{ secrets.QUIZDOWN_PYPI_TOKEN }}
-        run: cd cffi && maturin publish -b cffi --username __token__
+        run: cd python && maturin publish --username __token__
 

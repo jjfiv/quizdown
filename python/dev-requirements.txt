@@ -1,4 +1,4 @@
-cffi
 maturin
 black
 mypy
+bs4
