@@ -4,8 +4,8 @@ set -eu
 
 rm -rf quizdown/quizdown
 source venv/bin/activate
+pip install -q -r requirements.txt
 pip install -q -r dev-requirements.txt
-maturin build -b cffi
-maturin develop -b cffi
-python -m unittest discover -s tests
+maturin build --release
+maturin develop --release
 python -m quizdown --help
