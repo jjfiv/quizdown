@@ -3,4 +3,4 @@
 opt-level = 2
 
 [workspace]
-members = ["lib", "cli", "wasm"]
+members = ["lib", "cli", "wasm", "python"]

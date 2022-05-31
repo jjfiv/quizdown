@@ -33,26 +33,26 @@ jobs:
           cargo test --release
       - name: py-install
         run: |
-          pip install -r cffi/requirements.txt
-          pip install --upgrade pip
+          pip install -U pip
+          pip install -r python/requirements.txt
           pip install maturin bs4
       - name: build-wheel
-        working-directory: ./cffi
+        working-directory: ./python
         run: |
           maturin build --release
           pip install ../target/wheels/quizdown*.whl
-      - name: py-unittest
-        working-directory: ./cffi
-        run: |
-          python -I -m unittest discover -s tests -v
       - uses: actions/upload-artifact@v1
         name: upload-wheel
         with:
           name: ${{ matrix.platform }}-wheel
           path: target/wheels/
+      - name: py-unittest
+        working-directory: ./python
+        run: |
+          python -I -m unittest discover -s tests -v
       - name: '[on-create] pypi-publish'
         if: github.event_name == 'release'
-        working-directory: ./cffi
+        working-directory: ./python
         env: 
           MATURIN_PASSWORD: ${{ secrets.QUIZDOWN_PYPI_TOKEN }}
-        run: maturin publish -b cffi --username __token__
+        run: maturin publish --username __token__
