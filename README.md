@@ -2,7 +2,7 @@
 
 Markdown, but for creating multiple-choice quizzes. Especially helpful if you routinely want syntax-highlighting in your question, answers, or distractors.
 
-Try a [live version (beta)](https://static.jjfoley.me/quizdown-web/) on my website.
+Try a [live version (beta)](https://beta.jjfoley.me/quizdown-web/) on my website.
 
 ## Off-line Quick-Start
 
